@@ -9,7 +9,9 @@
     "Fixed path aliases in typescript and tailwind.",
     "Removed deprecated baseUrl to resolve TS config warning.",
     "Created Nav and Hero components directly in App.tsx using requirements.",
-    "Build succeeds perfectly."
+    "Build succeeds perfectly.",
+    "Replaced background video with cinematic generated image Option 3.",
+    "Adjusted Hero Content layout to be a centered single-column layout by removing right-side image to focus entirely on typography and background."
   ],
   "next_steps": [],
   "open_questions": [],
