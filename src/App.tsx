@@ -1,6 +1,6 @@
 import { cn } from "./lib/utils"
 import { motion, useInView } from "framer-motion"
-import { useRef, type ReactNode } from "react"
+import { useRef, useEffect, type ReactNode } from "react"
 
 const IMAGES = {
   hero: "https://lh3.googleusercontent.com/aida-public/AB6AXuA29c1zd38blA3YV4YBUF2v2T6ebwB-dsuSjV7eUQbjzVrckFY6eScDeyoy3k5p3OO832HzlXU38wsqo6oyO5dW9aCuPoqEb7U70EGdeeNFSTG0eVBp4gg91Km7TDCt4f8uqIwcYaBFcbpCP1c39lLMGBysQQ9lYYSTCLExwMQzSW3XHVOPLZCQQTYAlnxjGoUlcjEIPNwd82K7VR1hVruUNnBef-6sASMmoUTjmyVrNkgZC8EYIybu-2CKlbbAqn7448iUWehoTY4",
@@ -45,10 +45,45 @@ function Reveal({ children, delay = 0, direction = "up", className }: {
 }
 
 export default function App() {
+  const heroRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const hero = heroRef.current
+    if (!hero) return
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY > 0) {
+        e.preventDefault()
+        document.getElementById("why")?.scrollIntoView({ behavior: "smooth" })
+      }
+    }
+
+    const handleTouch = (() => {
+      let startY = 0
+      const onStart = (e: TouchEvent) => { startY = e.touches[0].clientY }
+      const onEnd = (e: TouchEvent) => {
+        if (startY - e.changedTouches[0].clientY > 40) {
+          document.getElementById("why")?.scrollIntoView({ behavior: "smooth" })
+        }
+      }
+      return { onStart, onEnd }
+    })()
+
+    hero.addEventListener("wheel", handleWheel, { passive: false })
+    hero.addEventListener("touchstart", handleTouch.onStart, { passive: true })
+    hero.addEventListener("touchend", handleTouch.onEnd, { passive: true })
+
+    return () => {
+      hero.removeEventListener("wheel", handleWheel)
+      hero.removeEventListener("touchstart", handleTouch.onStart)
+      hero.removeEventListener("touchend", handleTouch.onEnd)
+    }
+  }, [])
+
   return (
-    <div className="min-h-screen font-sans snap-y snap-mandatory overflow-y-auto h-screen">
-      {/* ═══════════════════ HERO (snap section) ═══════════════════ */}
-      <div className="relative h-screen overflow-hidden bg-background text-foreground selection:bg-white/20 snap-start snap-always">
+    <div className="min-h-screen font-sans">
+      {/* ═══════════════════ HERO (snap on scroll down) ═══════════════════ */}
+      <div ref={heroRef} className="relative h-screen overflow-hidden bg-background text-foreground selection:bg-white/20">
         <img
           src="/hero-bg.png"
           alt="Clean Fit Background"
@@ -137,7 +172,7 @@ export default function App() {
       </div>
 
       {/* ═══════════════════ WHY CLEAN FIT ═══════════════════ */}
-      <section id="why" className="py-24 px-8 bg-slate-50 snap-start">
+      <section id="why" className="py-24 px-8 bg-slate-50">
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
@@ -171,7 +206,7 @@ export default function App() {
       </section>
 
       {/* ═══════════════════ SERVICES ═══════════════════ */}
-      <section id="services" className="py-24 px-8 bg-white snap-start">
+      <section id="services" className="py-24 px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-16 text-center text-slate-900">Our Services</h2>
@@ -198,7 +233,7 @@ export default function App() {
       </section>
 
       {/* ═══════════════════ BEFORE & AFTER ═══════════════════ */}
-      <section id="gallery" className="py-24 px-8 bg-slate-100 snap-start">
+      <section id="gallery" className="py-24 px-8 bg-slate-100">
         <div className="max-w-7xl mx-auto">
           <Reveal direction="left">
             <div className="mb-16">
@@ -227,7 +262,7 @@ export default function App() {
       </section>
 
       {/* ═══════════════════ PRICING ═══════════════════ */}
-      <section id="pricing" className="py-24 px-8 bg-white snap-start">
+      <section id="pricing" className="py-24 px-8 bg-white">
         <div className="max-w-4xl mx-auto">
           <Reveal>
             <div className="text-center mb-16">
@@ -266,7 +301,7 @@ export default function App() {
       </section>
 
       {/* ═══════════════════ REVIEWS ═══════════════════ */}
-      <section id="reviews" className="py-24 px-8 bg-slate-50 overflow-hidden snap-start">
+      <section id="reviews" className="py-24 px-8 bg-slate-50 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <Reveal>
             <h2 className="text-4xl font-black tracking-tighter mb-16 text-center uppercase text-slate-900">Real Experience</h2>
@@ -298,7 +333,7 @@ export default function App() {
       </section>
 
       {/* ═══════════════════ BOOKING CTA ═══════════════════ */}
-      <section className="py-24 px-8 bg-slate-900 snap-start">
+      <section className="py-24 px-8 bg-slate-900">
         <div className="max-w-7xl mx-auto text-white">
           <Reveal>
             <div className="text-center mb-16">
@@ -338,7 +373,7 @@ export default function App() {
       </section>
 
       {/* ═══════════════════ FOOTER ═══════════════════ */}
-      <footer className="py-12 bg-slate-100 border-t border-slate-200 snap-start">
+      <footer className="py-12 bg-slate-100 border-t border-slate-200">
         <div className="flex flex-col md:flex-row justify-between items-center px-6 lg:px-12 max-w-screen-2xl mx-auto gap-4">
           <div className="text-lg font-black text-slate-800">Clean Fit</div>
           <div className="flex gap-8">
